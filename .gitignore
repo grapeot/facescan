@@ -27,5 +27,8 @@ scans/
 *.stl
 *.usdz
 
+# Scratch renders
+tmp.png
+
 # macOS
 .DS_Store
