@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "facescan"
+version = "0.1.0"
+description = "Mac-side TSDF fusion for iPhone TrueDepth face scans"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    # 0.20.0 regresses ScalableTSDFVolume: it re-normalizes metric float32 depth
+    # by 1000 during voxel activation, so the volume stays empty. See
+    # https://github.com/isl-org/Open3D/issues/7592 (fix PR #7594 unmerged).
+    "open3d>=0.17,<0.20",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

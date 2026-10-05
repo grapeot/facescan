@@ -1,0 +1,31 @@
+# Local private config (team id, bundle id, device name). Never commit.
+.local/
+.env
+.env.*
+!.env.example
+
+# Build artifacts
+ios/build/
+ios/*.xcodeproj/
+*.ipa
+*.app
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Scan outputs / local data
+out/
+scans/
+*.ply
+*.obj
+*.stl
+*.usdz
+
+# macOS
+.DS_Store

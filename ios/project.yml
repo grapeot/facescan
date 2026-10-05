@@ -1,0 +1,29 @@
+name: FaceScan
+options:
+  bundleIdPrefix: com.grapeot
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+
+targets:
+  FaceScan:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+    settings:
+      base:
+        # Placeholders only. Real values are injected at build time by
+        # scripts/build_ios.sh (DEVELOPMENT_TEAM / PRODUCT_BUNDLE_IDENTIFIER),
+        # so private ids never live in this tracked file.
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.facescan
+        PRODUCT_NAME: FaceScan
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: YOURTEAMID
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Resources/Info.plist
+        SUPPORTS_MACCATALYST: NO
+        ENABLE_USER_SCRIPT_SANDBOXING: YES
