@@ -12,6 +12,11 @@ facescan 把配备 TrueDepth 前置摄像头的 iPhone（iPhone X 及后续机�
 ![单帧原始深度，只有一面且表面噪声极大](docs/assets/single_frame.jpg)
 *单帧原始深度（只有一面，表面噪声极大）。多角度融合才能得到上面那样完整平滑的网格。*
 
+直接对单帧做平滑看似能救，但代价是把五官和棱角一起抹掉，出来一个没有细节的"面团"，并不实用：
+
+![单帧直接平滑的效果](docs/assets/single_frame_smoothed.jpg)
+*单帧直接平滑后——噪声没了，但五官被抹平、棱角丢失。*
+
 ## 依赖
 
 - 一台配备 TrueDepth 的 iPhone（iPhone X 及后续机型）与一台 Mac，两者需完成设备配对
