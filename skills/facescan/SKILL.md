@@ -26,7 +26,11 @@ description: 从命令行驱动 iPhone TrueDepth 人脸扫描并融合成三维�
 1. **确认环境**：`xcodegen`、`uv` 在 PATH；`xcrun devicectl list devices` 能看到目标手机（`available (paired)`）。设备不可见或 locked 时**停下问用户**，不要退回模拟器。
 2. **启动扫描**：选一个 run id（`[A-Za-z0-9_-]+`，如 `20261004_213000`）。
    `scripts/scan.sh start --run-id <ID>`
-   然后**告诉用户**：手机举在脸前约 20–35cm，**让手机基本不动、慢慢转头**（正脸 → 一侧耳 → 回正 → 另一侧耳，可再抬下巴、低头），这样每帧都是新角度；保持中性表情；扫完说一声。转头拍法是目前质量最好的方式。
+   然后**告诉用户**这套实测最好的拍法：
+   - **手机固定，不要手持**：用迷你三脚架/支架把手机立在固定台面上，镜头对着脸。手持会抖，明显掉质量。
+   - **人动手机不动**：面对手机站好，头和上身不动，用脚小碎步带动全身慢慢转（不要转头）。
+   - **来回慢扫，不要一次转到底**：从正脸开始，左转一点、右转一点，反复小幅往返（约在正面到左右各 50° 之间摆动），让每个角度都有多帧重叠。实测明显好于一次转到极限。来回扫也让屏幕一直大致对着人，按开始/停止按钮方便。
+   - 距离约 20–35cm，保持中性表情。扫完说一声。
 3. **等用户扫完**：用户说扫完后 `scripts/scan.sh stop`。若你没在跟用户实时交互，可轮询 `scripts/scan.sh status` 直到 `state == "stopped"` 且 `meta.json: present`。**`meta.json` 出现是"扫完了"的唯一可靠信号**（`status.json` 的 `state` 是辅助）。
 4. **拉取**：`scripts/pull.sh --run-id <ID> --out scans/<ID>`。
 5. **先诊断再融合**：`python -m facescan diagnose <scan_dir>` 看位姿质量。`face_center_max_dev_m` 小（<0.05m）说明位姿一致。可选 `scripts/crosscheck_outliers.py <scan_dir>` 用独立信号（相邻帧深度重投影误差）核对剔除是否合理。
@@ -59,6 +63,9 @@ description: 从命令行驱动 iPhone TrueDepth 人脸扫描并融合成三维�
 - **`--terminate-existing` 会重启 App**：`scan.sh start` 用冷启动下发 deep link；若需对已在跑的进程下命令用 `openURL`。
 - **契约漂移**：改 iPhone 或 Mac 任一端的数据格式，必须同步 `docs/rfc.md` + `src/facescan/contract.py` + iOS Codable 类型。
 - **`capturedDepthData` 多数帧为 nil 是正常的**：TrueDepth 深度约 15Hz，相机约 60Hz，`status.json` 的 `depth_missing/depth_total` 常接近 0.75。这不是故障，别据此判定采集失败。
-- **拍法决定参考系**：相机绕静止的脸转用 world 坐标系；头转、相机不动必须用 face 坐标系（`--frame auto` 会自动选）。用错会把点撒开成两层皮。
+- **拍法决定参考系**：相机绕静止的脸转用 world 坐标系；头转/人转、相机不动必须用 face 坐标系（`--frame auto` 会自动选）。用错会把点撒开成两层皮。
+- **最优拍法是"固定相机 + 人小碎步转体 + 来回慢扫"**：手持必抖、质量差；一次转到底会让每角度重叠少、更毛糙。来回小幅往返让每角度多帧重叠，TSDF 充分平均，实测表面粗糙度可到 0.4mm（一次转到底约 0.9–1.4mm）。
+- **前摄物理上限约 ±90°**：脸转过正侧后前摄看不到足够皮肤、ARKit 失去跟踪，所以侧后方/后脑永远扫不到（数据表现为"转到 90° 后回落"）。要 360° 只能分两次扫再拼。
 - **帧多不等于质量好**：冗余近重复帧对体积无贡献；`--max-frames` 去冗余，质量靠角度覆盖而非帧数。
+- **别按有效深度占比剔帧**（`--min-valid-ratio`）：实测这类扫描的有效占比本就在 24–44% 波动，按占比会误杀大半帧。只用 reprojection 过滤（`--max-reproj-error`）。
 - **隐私**：真实 team id / 设备名 / UDID / bundle id 只进 `.local/local.env`（gitignored）。提交前扫描零命中。

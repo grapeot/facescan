@@ -21,6 +21,10 @@
 - 重组与 check-in 准备：加 README + 示例图 `docs/assets/example_scan.jpg`，清理 `tmp/iphone_face_scan` 草稿与本地 out/scans/build 产物。
 - 全文档转中文（README 走 AGY 起草后主 agent 审核；skill frontmatter 与正文更新为当前拍法与 flags）。
 - Readiness review 通过：pytest 4 passed、shellcheck 干净、bash -n 通过、隐私扫描零命中、gitignore 生效（.local/build/out/scans 未入库）、CI 依赖确认（open3d 0.19 有 manylinux cp312 wheel，测试不依赖 GUI）。
+- 建公开仓库 https://github.com/grapeot/facescan（master，保护规则 0 reviewers + enforce admins）。
+- 确立最优采集方法（实测）：**手机固定在三脚架上、人小碎步转体、来回慢扫**。粗糙度从一次转到底的 0.9–1.4mm 降到 0.38mm（81 帧干净扫描，reprojection 误差 1.5–2.7mm）。
+- 确认前摄物理上限约 ±90°（数据表现为"转到 90° 后回落"），侧后方/后脑不可得。
+- 更新 README（hero 图换成 0.38mm 版、采集指引重写）与 skill（采集方法 + 前摄上限 + 弃用 min-valid-ratio）。
 
 ## Lessons Learned
 
